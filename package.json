@@ -24,6 +24,11 @@
     "vite": "^2.8.0"
   },
   "dependencies": {
+    "@codemirror/lang-markdown": "^6.0.5",
+    "@codemirror/state": "^6.1.4",
+    "@grammarly/editor-sdk": "^2.2.0",
+    "arweave-wallet-connector": "^0.0.31",
+    "codemirror": "^6.0.1",
     "crocks": "^0.12.4",
     "hast-util-to-html": "^8.0.3",
     "hastscript": "^7.1.0",
