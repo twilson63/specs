@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import { router } from "tinro";
 
   let editor = null;
 
@@ -30,7 +31,7 @@
         },
         {
           name: "cancel",
-          action: () => {},
+          action: () => router.goto("/specs"),
           className: "fa fa-ban",
           text: "cancel ",
           title: "Cancel Spec",
