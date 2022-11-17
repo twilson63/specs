@@ -9,6 +9,8 @@
   onMount(() => {
     editor = new EasyMDE({
       minHeight: "85vh",
+      autoFocus: true,
+      spellChecker: false,
       toolbar: [
         "bold",
         "italic",
