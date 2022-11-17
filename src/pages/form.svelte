@@ -1,8 +1,10 @@
 <script>
   import { onMount } from "svelte";
   import { router } from "tinro";
+  import Publish from "../dialogs/publish.svelte";
 
   let editor = null;
+  let showPublish = false;
 
   onMount(() => {
     editor = new EasyMDE({
@@ -24,7 +26,9 @@
         "|",
         {
           name: "publish",
-          action: () => {},
+          action: () => {
+            showPublish = true;
+          },
           className: "fa fa-cloud-upload",
           text: "Publish ",
           title: "Publish Spec",
@@ -39,6 +43,12 @@
       ],
     });
   });
+
+  async function handlePublish(e) {
+    const spec = { ...e.detail, content: editor.value() };
+    console.log(spec);
+  }
 </script>
 
 <textarea />
+<Publish bind:open={showPublish} on:publish={handlePublish} />
