@@ -1,4 +1,3 @@
-import fetch from 'node-fetch'
 import Arweave from 'arweave'
 import { map } from 'ramda'
 
@@ -47,6 +46,9 @@ async function dispatch({ data, tags }) {
 }
 
 async function post({ data, tags, id }) {
+  if (!fetch) {
+    return Promise.reject('fetch is required!')
+  }
   const tx = await arweave.createTransction({ data })
   map(t => tx.addTag(t.name, t.value), tags)
   await arweave.transactions.sign(tx, 'use_wallet')

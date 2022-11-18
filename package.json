@@ -34,7 +34,6 @@
     "crocks": "^0.12.4",
     "hast-util-to-html": "^8.0.3",
     "hastscript": "^7.1.0",
-    "node-fetch": "^3.3.0",
     "ramda": "^0.28.0",
     "zod": "^3.19.1"
   }

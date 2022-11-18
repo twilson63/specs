@@ -1,3 +1,11 @@
+<script>
+  import SpecItem from "../components/spec-item.svelte";
+
+  function specs() {
+    return Promise.resolve([]);
+  }
+</script>
+
 <main>
   <section class="hero min-h-screen bg-base-100 items-start">
     <div class="hero-content flex-col">

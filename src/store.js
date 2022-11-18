@@ -4,7 +4,7 @@
  * 
  */
 import { readable, writable } from 'svelte/store'
-import { post } from './core.js'
+import { post } from './domain/index.js'
 import { publish } from './services/asset-service.js'
 
 export const profile = writable(null)
