@@ -1,9 +1,8 @@
 import fetch from 'node-fetch'
 import Arweave from 'arweave'
-import { Async } from 'crocks'
 import { map } from 'ramda'
 
-const { of, fromPromise } = Async
+const URL = 'https://gateway.redstone.finance/gateway/contracts/deploy'
 const arweave = Arweave.init({
   host: 'arweave.net',
   port: 443,
@@ -27,24 +26,39 @@ const arweave = Arweave.init({
 /**
  * @param {AssetPage} asset
  */
-export const publish = (asset) =>
-  of({ asset })
-    .chain(dispatchSource)
-//.chain(dispatchAsset)
-//.chain(postAsset)
+export const publish = (asset) => {
+  return Promise.resolve(asset)
+    .then(asset => Promise.all([
+      dispatch(asset.source),
+      dispatch(asset.asset)
+    ]))
+    .then(([_, asset]) => asset)
+    .then(post)
+}
 
-
-function dispatchSource(ctx) {
+async function dispatch({ data, tags }) {
   if (!arweaveWallet) {
-    return Async.Rejected('No wallet found')
+    return Promise.reject('No wallet found')
   }
-  return fromPromise(async (ctx) => {
-    const tx = await arweave.createTransaction({ data: ctx.asset.source.data })
-    map(t => tx.addTag(t.name, t.value), ctx.asset.source.tags)
-    return arweaveWallet.dispatch(tx)
-  })(ctx)
-    .map(result => {
-      console.log(result)
-    })
-    .map(_ => ctx)
+  const tx = await arweave.createTransaction({ data })
+  map(t => tx.addTag(t.name, t.value), tags)
+  const result = await arweaveWallet.dispatch(tx)
+  return { data, tags, id: result.id }
+}
+
+async function post({ data, tags, id }) {
+  const tx = await arweave.createTransction({ data })
+  map(t => tx.addTag(t.name, t.value), tags)
+  await arweave.transactions.sign(tx, 'use_wallet')
+  tx.id = id
+  await fetch(URL, {
+    method: 'POST',
+    body: JSON.stringify({ contractTx: tx }),
+    headers: {
+      'Accept-Encoding': 'gzip, deflate, br',
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    }
+  })
+  return { id }
 }

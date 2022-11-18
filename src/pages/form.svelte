@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import { router } from "tinro";
+  import { profile, app } from "../store.js";
   import Publish from "../dialogs/publish.svelte";
 
   let editor = null;
@@ -49,6 +50,8 @@
   async function handlePublish(e) {
     const spec = { ...e.detail, content: editor.value() };
     console.log(spec);
+    const result = await $app.post(spec);
+    console.log(result);
   }
 </script>
 

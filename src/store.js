@@ -3,6 +3,11 @@
  * make it available for any view
  * 
  */
-import { writable } from 'svelte/store'
+import { readable, writable } from 'svelte/store'
+import { post } from './core.js'
+import { publish } from './services/asset-service.js'
 
 export const profile = writable(null)
+export const app = readable({
+  post: (asset) => post(asset).runWith({ publish }).toPromise()
+})
