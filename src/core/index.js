@@ -7,6 +7,7 @@ import { toHtml } from 'hast-util-to-html'
 const { of, ask, lift } = ReaderT(Async)
 
 const Spec = z.object({
+  assetId: z.string(),
   title: z.string(),
   abstract: z.string(),
   version: z.string(),
