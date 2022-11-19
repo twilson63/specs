@@ -39,8 +39,19 @@ async function dispatch({ data, tags }) {
   if (!arweaveWallet) {
     return Promise.reject('No wallet found')
   }
+  const address = await arweaveWallet.getActiveAddress()
   const tx = await arweave.createTransaction({ data })
   map(t => tx.addTag(t.name, t.value), tags)
+  tx.addTag('initState', JSON.stringify({
+    balances: {
+      [address]: 10000
+    },
+    name: 'SpecAsset',
+    ticker: 'SPEC',
+    pairs: [],
+    settings: [['isTradeable', true]]
+  }))
+
   const result = await arweaveWallet.dispatch(tx)
   return { data, tags, id: result.id }
 }
@@ -49,8 +60,20 @@ async function post({ data, tags, id }) {
   if (!fetch) {
     return Promise.reject('fetch is required!')
   }
-  const tx = await arweave.createTransction({ data })
+  const address = await arweaveWallet.getActiveAddress()
+  const tx = await arweave.createTransaction({ data })
   map(t => tx.addTag(t.name, t.value), tags)
+
+  tx.addTag('initState', JSON.stringify({
+    balances: {
+      [address]: 10000
+    },
+    name: 'SpecAsset',
+    ticker: 'SPEC',
+    pairs: [],
+    settings: [['isTradeable', true]]
+  }))
+
   await arweave.transactions.sign(tx, 'use_wallet')
   tx.id = id
   await fetch(URL, {
