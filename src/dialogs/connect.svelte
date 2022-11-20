@@ -34,7 +34,7 @@
   async function arwallet() {
     try {
       const wallet = new ArweaveWebWallet({
-        name: "pst",
+        name: "specs",
       });
       wallet.setUrl("arweave.app");
       await wallet.connect();

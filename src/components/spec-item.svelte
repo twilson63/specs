@@ -9,6 +9,7 @@
   <div class="">
     {spec.description}
   </div>
+
   <div class="flex space-x-2">
     <div class="flex flex-col space-y-2">
       <div>Stamps</div>

@@ -2,7 +2,11 @@ import { Async, ReaderT } from 'crocks'
 import { z } from 'zod'
 import { h } from 'hastscript'
 import { toHtml } from 'hast-util-to-html'
-import { identity, over, lensProp, lens, prop, assoc, compose, trim, split, map } from 'ramda'
+import {
+  not, find, identity, over, lensProp, lens, pluck,
+  path, assoc, compose, trim, split, map, filter,
+  prop, propEq
+} from 'ramda'
 import { marked } from 'marked'
 
 
@@ -56,15 +60,30 @@ const generate = spec => `<!doctype html>
 
 export const post = spec => of(spec)
   .map(over(lensProp('assetId'), crypto.randomUUID.bind(crypto)))
-  //.map(x => (console.log('spec', x), x))
   .map(over(lensHtml, generate))
   .map(over(lensProp('topics'), compose(map(trim), split(','))))
-  //.map(x => (console.log('spec', x), x))
-  .chain(spec => ask(env => validate(spec)
-    .map(transformSpec)
-    .chain(Async.fromPromise(env.publish))
+  .chain(spec => ask(env =>
+    validate(spec)
+      .map(transformSpec)
+      .chain(Async.fromPromise(env.publish))
   ))
   .chain(lift)
+
+export const list = () => of(specQuery())
+  .chain(query => ask(env =>
+    Async.fromPromise(env.gql)(query)
+      .map(compose(
+        map(toSpec),
+        filter(noBundleFilter),
+        pluck('node'),
+        path(['data', 'transactions', 'edges'])
+      ))
+  ))
+  .chain(lift)
+
+export const hx = () => {
+
+}
 
 export const get = id => of(id)
   .chain(id => ask(env =>
@@ -79,6 +98,22 @@ export const put = (id, spec) => of({ id, ...spec })
   ))
   .chain(lift)
 
+
+function specQuery() {
+  return `query {
+transactions(first: 100, tags: {name: "Type", values:["spec"]}) {
+  edges {
+    node {
+      id
+      tags {
+        name
+        value
+      }
+    }
+  }
+}
+  }`
+}
 
 function transformSpec(spec) {
   return {
@@ -106,5 +141,21 @@ function transformSpec(spec) {
         { name: 'Asset-Id', value: spec.assetId }
       ]
     }
+  }
+}
+
+function noBundleFilter({ tags }) {
+  return not(find(t => t.name === 'Uploader', tags))
+}
+
+function toSpec(n) {
+  const getTag = name => compose(prop('value'), find(propEq('name', name)))(n.tags)
+  return {
+    title: getTag('Title'),
+    description: getTag('Description'),
+    topics: [],
+    assetId: getTag('Asset-Id'),
+    stamps: 0,
+    published: '1/1/1980'
   }
 }
