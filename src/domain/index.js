@@ -3,9 +3,10 @@ import { z } from 'zod'
 import { h } from 'hastscript'
 import { toHtml } from 'hast-util-to-html'
 import {
+  __,
   not, find, identity, over, lensProp, lens, pluck,
   path, assoc, compose, trim, split, map, filter,
-  prop, propEq
+  prop, propEq, head
 } from 'ramda'
 import { marked } from 'marked'
 
@@ -87,7 +88,19 @@ export const hx = () => {
 
 export const get = id => of(id)
   .chain(id => ask(env =>
-    env.readState(id)
+    Async.fromPromise(env.gql)(specSourceByAssetId(id))
+      .map(compose(
+        head,
+        map(toSpec),
+        pluck('node'),
+        path(['data', 'transactions', 'edges'])
+      ))
+      .chain(spec =>
+        Async.fromPromise(fetch)(`https://arweave.net/${spec.sourceId}`)
+          .chain(res => Async.fromPromise(res.text.bind(res))())
+          .map(assoc('content', __, spec))
+      )
+      .map(over(lensHtml, generate))
       .chain(validate)
   ))
   .chain(lift)
@@ -98,6 +111,27 @@ export const put = (id, spec) => of({ id, ...spec })
   ))
   .chain(lift)
 
+function specSourceByAssetId(id) {
+  return `query {
+    transactions( 
+      tags: [
+        {name:"Content-Type", values:["text/markdown"]},
+        {name:"Type", values:["spec-source"]},
+        {name: "Asset-Id", values: ["${id}"]}
+      ]
+    ) {
+      edges {
+        node {
+          id
+          tags {
+            name 
+            value 
+          }
+        }
+      }
+    }
+  }`
+}
 
 function specQuery() {
   return `query {
@@ -155,6 +189,7 @@ function toSpec(n) {
     description: getTag('Description'),
     topics: [],
     assetId: getTag('Asset-Id'),
+    sourceId: n.id,
     stamps: 0,
     published: '1/1/1980'
   }

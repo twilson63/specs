@@ -7,3 +7,5 @@ export const gql = (query) => fetch(GRAPHQL, {
   },
   body: JSON.stringify({ query })
 }).then(res => res.ok ? res.json() : Promise.reject('Could not query graphql server'))
+
+export const fetchData = (id) => fetch(`${URL}/${id}`).then(res => res.text())

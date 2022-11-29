@@ -1,7 +1,8 @@
 import Arweave from 'arweave'
 import { map } from 'ramda'
 
-const URL = 'https://gateway.redstone.finance/gateway/contracts/deploy'
+//const URL = 'https://gateway.redstone.finance/gateway/contracts/deploy'
+const URL = 'https://d1o5nlqr4okus2.cloudfront.net/gateway/contracts/deploy'
 const arweave = Arweave.init({
   host: 'arweave.net',
   port: 443,
@@ -42,7 +43,7 @@ async function dispatch({ data, tags }) {
   const address = await arweaveWallet.getActiveAddress()
   const tx = await arweave.createTransaction({ data })
   map(t => tx.addTag(t.name, t.value), tags)
-  tx.addTag('initState', JSON.stringify({
+  tx.addTag('Init-State', JSON.stringify({
     balances: {
       [address]: 10000
     },
@@ -64,7 +65,7 @@ async function post({ data, tags, id }) {
   const tx = await arweave.createTransaction({ data })
   map(t => tx.addTag(t.name, t.value), tags)
 
-  tx.addTag('initState', JSON.stringify({
+  tx.addTag('Init-State', JSON.stringify({
     balances: {
       [address]: 10000
     },
@@ -76,7 +77,8 @@ async function post({ data, tags, id }) {
 
   await arweave.transactions.sign(tx, 'use_wallet')
   tx.id = id
-  await fetch(URL, {
+  console.log('tx: ', tx)
+  const res = await fetch(URL, {
     method: 'POST',
     body: JSON.stringify({ contractTx: tx }),
     headers: {
@@ -85,5 +87,6 @@ async function post({ data, tags, id }) {
       Accept: 'application/json'
     }
   })
+  console.log(await res.text())
   return { id }
 }

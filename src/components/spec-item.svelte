@@ -9,6 +9,9 @@
   <div class="">
     {spec.description}
   </div>
+  <div class="">
+    <a class="btn btn-outline" href="/specs/{spec.assetId}">View</a>
+  </div>
 
   <div class="flex space-x-2">
     <div class="flex flex-col space-y-2">

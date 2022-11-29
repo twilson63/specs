@@ -4,7 +4,7 @@
  * 
  */
 import { readable, writable } from 'svelte/store'
-import { post, list } from './domain/index.js'
+import { post, list, get } from './domain/index.js'
 import { publish } from './services/asset-service.js'
 import { gql } from './services/arweave.js'
 
@@ -12,5 +12,6 @@ import { gql } from './services/arweave.js'
 export const profile = writable(null)
 export const app = readable({
   post: (asset) => post(asset).runWith({ publish }).toPromise(),
-  list: () => list().runWith({ gql }).toPromise()
+  list: () => list().runWith({ gql }).toPromise(),
+  get: (id) => get(id).runWith({ gql }).toPromise()
 })

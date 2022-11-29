@@ -60,9 +60,8 @@
 
   async function handlePublish(e) {
     const spec = { ...e.detail, content: editor.value() };
-    console.log(spec);
     const result = await $app.post(spec);
-    console.log(result);
+    router.goto("/specs");
   }
 </script>
 

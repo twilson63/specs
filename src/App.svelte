@@ -6,7 +6,7 @@
   import Home from "./pages/home.svelte";
   import Specs from "./pages/index.svelte";
   import Form from "./pages/form.svelte";
-
+  import Show from "./pages/show.svelte";
   import About from "./pages/about.svelte";
 
   router.mode.hash();
@@ -23,6 +23,9 @@
   </Route>
   <Route path="/specs/new">
     <Form />
+  </Route>
+  <Route path="/specs/:id" let:meta>
+    <Show asset={meta.params.id} />
   </Route>
   <Route path="/about">
     <About />
