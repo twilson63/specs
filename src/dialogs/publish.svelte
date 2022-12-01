@@ -1,16 +1,17 @@
 <script>
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
+
+  export let doc = {
+    title: "",
+    description: "",
+    topics: "",
+  };
 
   export let id = window.crypto.randomUUID();
   export let open = false;
   export let cancel = true;
   export let bgColor = "bg-white";
   export let border = "border-4 border-[#929292]";
-  let ans110 = {
-    title: "",
-    description: "",
-    topics: "",
-  };
   const dispatch = createEventDispatcher();
 
   function cancelClick() {
@@ -19,7 +20,7 @@
 
   function handleSubmit() {
     open = false;
-    dispatch("publish", ans110);
+    dispatch("publish", doc);
   }
 </script>
 
@@ -43,7 +44,7 @@
             type="text"
             placeholder="title for your spec"
             required
-            bind:value={ans110.title}
+            bind:value={doc.title}
           />
         </div>
         <div class="form-control">
@@ -53,7 +54,7 @@
             class="textarea textarea-bordered"
             placeholder="description"
             required
-            bind:value={ans110.description}
+            bind:value={doc.description}
           />
         </div>
         <div class="form-control">
@@ -63,7 +64,7 @@
             class="input input-bordered"
             type="text"
             placeholder="comma seperated list of topics"
-            bind:value={ans110.topics}
+            bind:value={doc.topics}
           />
         </div>
         <button

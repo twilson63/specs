@@ -5,11 +5,18 @@
   import Publish from "../dialogs/publish.svelte";
   import Config from "../dialogs/config.svelte";
 
+  export let asset = "";
+
   let editor = null;
   let showPublish = false;
   let showConfig = false;
+  let doc = {
+    title: "",
+    description: "",
+    topics: [],
+  };
 
-  onMount(() => {
+  onMount(async () => {
     editor = new EasyMDE({
       minHeight: "85vh",
       autoFocus: true,
@@ -56,15 +63,24 @@
         },
       ],
     });
+
+    if (asset !== "") {
+      const s = await $app.get(asset);
+      doc.title = s.title;
+      doc.description = s.description;
+      doc.topics = s.topics.join(", ");
+      editor.value(s.content);
+    }
   });
 
   async function handlePublish(e) {
     const spec = { ...e.detail, content: editor.value() };
     const result = await $app.post(spec);
+    console.log(result);
     router.goto("/specs");
   }
 </script>
 
 <textarea />
-<Publish bind:open={showPublish} on:publish={handlePublish} />
+<Publish {doc} bind:open={showPublish} on:publish={handlePublish} />
 <Config bind:open={showConfig} />

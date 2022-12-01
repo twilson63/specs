@@ -8,11 +8,13 @@
     <div class="hero-content flex-col">
       <a href="/specs/new" class="btn btn-sm btn-outline">New Spec Document</a>
       <h1>Active Specifications</h1>
-      {#await $app.list() then specs}
-        {#each specs as spec}
-          <SpecItem {spec} />
-        {/each}
-      {/await}
+      <div class="md:w-[1000px]">
+        {#await $app.list() then specs}
+          {#each specs as spec}
+            <SpecItem {spec} />
+          {/each}
+        {/await}
+      </div>
     </div>
   </section>
 </main>

@@ -24,6 +24,9 @@
   <Route path="/specs/new">
     <Form />
   </Route>
+  <Route path="/specs/:id/fork" let:meta>
+    <Form asset={meta.params.id} />
+  </Route>
   <Route path="/specs/:id" let:meta>
     <Show asset={meta.params.id} />
   </Route>

@@ -96,7 +96,7 @@ export const get = id => of(id)
         path(['data', 'transactions', 'edges'])
       ))
       .chain(spec =>
-        Async.fromPromise(fetch)(`https://arweave.net/${spec.sourceId}`)
+        Async.fromPromise(fetch)(`https://arweave.net/${spec.id}`)
           .chain(res => Async.fromPromise(res.text.bind(res))())
           .map(assoc('content', __, spec))
       )
@@ -189,7 +189,7 @@ function toSpec(n) {
     description: getTag('Description'),
     topics: [],
     assetId: getTag('Asset-Id'),
-    sourceId: n.id,
+    id: n.id,
     stamps: 0,
     published: '1/1/1980'
   }
